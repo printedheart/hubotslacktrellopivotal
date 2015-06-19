@@ -21,7 +21,22 @@ function postToTrello(listId, command, text, cb) {
 	};
 
 	trello.post('/1/lists/' + listId + '/cards', card_data, cb);
+}
 
+app.post('/*', function(req, res, next) {
+  var listId = req.params[0];
+  var command = req.body.command,
+  text = req.body.text;
+
+  postToTrello(listId, command, text, function(err, data) {
+    if (err) throw err;
+    console.log(data);
+
+    var name = data.name;
+    var url = data.shortUrl;
+
+    res.status(200).send('Card "' + name + '" created here: <' + url + '>');
+  });
 });
 
 // test route
